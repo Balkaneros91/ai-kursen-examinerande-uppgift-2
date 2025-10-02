@@ -21,7 +21,7 @@ Tips:
 - Applikationen använder en LLM eller annan AI-teknik (bildgenereringsmodeller, ljudgenereringsmodeller, semantisk sökning med embeddings)
 - Applikationen ska helt (eller delvis) utvecklas med stöd av AI (Github CoPilot, Gemini CLI, Cursor, ChatGPT)
 
-- Applikationen ska vara väldokumenterad (visa på förståelse för koden) och arbetet med den kan användas som underlag till era skriftliga inlämningar (uppgift 1).
+- Applikationen ska vara väldokumenterad/välkommenterad (visa på förståelse för koden) och arbetet med den kan användas som underlag till era skriftliga inlämningar (uppgift 1).
 - I **readme.md** ska även en reflektion över följande vara med:
     - Vilken ny AI-teknik/bibliotek identifierade ni och hur tillämpade ni det?
     - Motivera varför ni valde den AI-tekniken/det biblioteket.
