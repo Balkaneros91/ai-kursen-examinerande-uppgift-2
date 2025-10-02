@@ -1,6 +1,7 @@
 # AI-baserad webbapplikation
 
-
+#### Våran stack 
+Fullstack next.js med mongodb samt shadcn för componenter 
 ### syfte till vårat projekt
 Vi ska bygga en applikation som generar titel och brödtext  som converterar det till en bild , tanke då är att genera bild, brödtext,titel som ska lura användaren till att tro att dom läser på en riktiga sidan 
 
