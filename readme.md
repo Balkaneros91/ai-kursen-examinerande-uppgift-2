@@ -1,6 +1,13 @@
 # AI-baserad webbapplikation
 
+
+### syfte till vårat projekt
+Vi ska bygga en applikation som generar titel och brödtext  som converterar det till en bild , tanke då är att genera bild, brödtext,titel som ska lura användaren till att tro att dom läser på en riktiga sidan 
+
+
 ## Syfte
+
+
 Uppgiften går ut på att skapa en tjänst som använder modern AI-teknik på något vis.
 Med modern AI-teknik menas: Anrop till AI-API:er så som LLMs, embedding-modeller, klassificerings-modeller eller liknande.
 Ni väljer själva målsättningen med tjänsten, och att utforska detta med AI-stöd är en del av arbetet med uppgiften.
