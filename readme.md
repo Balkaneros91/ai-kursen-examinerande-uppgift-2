@@ -43,7 +43,7 @@ Tips:
 
 ### Kursmål som uppfylls (7-8) enligt kursplan
 Självständigt identifiera och tillämpa ny AI-teknik eller bibliotek i syfte att lösa programmeringsproblem.
-Analysera en teknisk problemställning och avgöra när AI är en lämplig lösning och när det inte är det.
+Analysera en teknisk problemställning och avgöra när AI är en lämplig lösning och när det inte är det. Både i utvecklandet av applikationen samt i applikationen självt.
 
 ---
 
