@@ -8,8 +8,8 @@ export async function POST(req: Request) {
   try {
     const { prompt } = await req.json();
 
-    // Load the model
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    // Load the model VÄXLA MELLAN PRO OCH FLASH  HÄR
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
 
     // Generate content
     const result = await model.generateContent(prompt);

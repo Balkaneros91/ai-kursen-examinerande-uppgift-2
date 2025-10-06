@@ -29,7 +29,7 @@ const tonePresets: TonePreset[] = [
   },
 ];
 
-// ✅ Simplified: no regex, no JSON parse
+
 const extractArticle = (raw: string): Article => {
   const fallback: Article = {
     title: "EXTRA: AI skapade ingen rubrik",
@@ -57,7 +57,7 @@ export default function Home() {
   const [timestamp, setTimestamp] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
+// PROMPT text som skickas till ai som den använder för att skapa artikel
   const promptText = useMemo(() => {
     const cleanedTopic = topic.trim() || "AI och dess påverkan på samhället";
     const uppercasePrefix = (prefix.trim() || "EXTRA").toUpperCase();
@@ -81,7 +81,7 @@ export default function Home() {
 
     return lines.join("\n");
   }, [angle, prefix, tone, topic]);
-
+// POSTREQUEST  TILL GEMINI API
   const handleGenerate = async () => {
     if (!topic.trim()) {
       setError("Skriv in ett ämne innan du genererar en artikel.");
@@ -120,7 +120,7 @@ export default function Home() {
       setLoading(false);
     }
   };
-
+//STYLE OCH HTML RENDERING
   return (
     <main className="min-h-screen bg-[#f7f5f0] text-[#111]">
       <header className="shadow-xl">
@@ -283,16 +283,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="rounded-xl border border-black/5 bg-white p-6 shadow-lg">
-            <h3 className="text-sm font-black uppercase tracking-[0.4em] text-[#b80000]">
-              Prompt som skickas till AI
-            </h3>
-            <textarea
-              readOnly
-              value={promptText}
-              className="mt-3 h-56 w-full rounded border border-black/10 bg-[#f9f9f9] px-3 py-2 text-xs font-mono leading-5 text-[#111]"
-            />
-          </div>
+         
         </aside>
       </section>
     </main>
