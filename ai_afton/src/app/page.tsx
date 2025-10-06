@@ -2,100 +2,50 @@
 
 import { useMemo, useState } from "react";
 
-type Article = {
-  title: string;
-  body: string;
-};
+type Article = { title: string; body: string };
 
-type TonePreset = {
-  label: string;
-  value: string;
-};
-
-type LanguageOption = {
-  label: string;
-  value: "sv" | "en";
-  directive: string;
-};
+type TonePreset = { label: string; value: string };
 
 const tonePresets: TonePreset[] = [
   {
     label: "Explosiv breaking",
     value:
-      "Explosive breaking news with adrenaline, high stakes and urgent verbs that make readers stop scrolling.",
+      "Explosiv kvällstidningsstil med högt tempo, dramatik och kraftfulla verb som fångar läsaren direkt.",
   },
   {
     label: "Vardaglig dramatik",
     value:
-      "Relatable everyday drama that connects to ordinary people, keep sentences short and emotional.",
+      "Berättande vardagsdramatik med känslor och igenkänning, korta meningar och tydliga kontraster.",
   },
   {
     label: "Tekno-eufori",
     value:
-      "Euphoric celebration of new technology, astonishment, promises about the future and bold claims.",
+      "Euforisk teknikton med framtidslöften, stora ord och känsla av framsteg och upptäckt.",
   },
   {
     label: "Skandalavslöjande",
     value:
-      "Investigative scandal tone with hints of secrecy, leaked details and a provocative edge.",
+      "Avslöjande ton med antydan om hemligheter, läckta detaljer och provokativt språk.",
   },
 ];
 
-const languageOptions: LanguageOption[] = [
-  {
-    label: "Svenska",
-    value: "sv",
-    directive:
-      "Skriv på naturlig svenska med kvällstidningskänsla, använd slagkraftiga uttryck och vardagligt språk.",
-  },
-  {
-    label: "English",
-    value: "en",
-    directive:
-      "Write in vivid, idiomatic English reminiscent of UK tabloids with lots of energy and punch.",
-  },
-];
-
+// ✅ Simplified: no regex, no JSON parse
 const extractArticle = (raw: string): Article => {
   const fallback: Article = {
     title: "EXTRA: AI skapade ingen rubrik",
-    body: raw.trim() || "Ingen text genererades. Prova igen med en tydligare instruktion.",
+    body:
+      raw.trim() ||
+      "Ingen text genererades. Prova igen med en tydligare instruktion.",
   };
 
-  if (!raw) {
-    return fallback;
-  }
-
-  const jsonMatch = raw.match(/\{[\s\S]*\}/);
-
-  if (jsonMatch) {
-    try {
-      const parsed = JSON.parse(jsonMatch[0]);
-      const title = typeof parsed.title === "string" ? parsed.title.trim() : "";
-      const body = typeof parsed.body === "string" ? parsed.body.trim() : "";
-
-      if (title && body) {
-        return { title, body };
-      }
-    } catch (error) {
-      console.warn("Kunde inte tolka JSON från modellen", error);
-    }
-  }
-
   const trimmed = raw.trim();
-
-  if (!trimmed) {
-    return fallback;
-  }
+  if (!trimmed) return fallback;
 
   const lines = trimmed.split(/\n+/);
   const title = lines[0]?.trim() || fallback.title;
-  const body = lines.slice(1).join("\n").trim();
+  const body = lines.slice(1).join("\n").trim() || fallback.body;
 
-  return {
-    title,
-    body: body || fallback.body,
-  };
+  return { title, body };
 };
 
 export default function Home() {
@@ -103,7 +53,6 @@ export default function Home() {
   const [angle, setAngle] = useState("");
   const [prefix, setPrefix] = useState("EXTRA");
   const [tone, setTone] = useState(tonePresets[0].value);
-  const [language, setLanguage] = useState<LanguageOption["value"]>(languageOptions[0].value);
   const [article, setArticle] = useState<Article | null>(null);
   const [timestamp, setTimestamp] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -115,7 +64,6 @@ export default function Home() {
     const angleText = angle.trim()
       ? `Fokusera på vinkeln: ${angle.trim()}.`
       : "Välj en oväntad men trovärdig vinkel som bygger på ämnet.";
-    const languageDirective = languageOptions.find((option) => option.value === language)?.directive;
 
     const lines: string[] = [
       "Du är reporter på en svensk kvällstidning som skriver blixtrande snabba artiklar.",
@@ -127,18 +75,12 @@ export default function Home() {
       `Ämne: ${cleanedTopic}`,
       angleText,
       `Ton: ${tone}`,
+      "Skriv på naturlig svenska med kvällstidningskänsla, använd slagkraftiga uttryck och vardagligt språk.",
+      "Svara endast med rubrik överst och därefter brödtext, separerad med radbrytningar.",
     ];
 
-    if (languageDirective) {
-      lines.push(languageDirective);
-    }
-
-    lines.push(
-      'Svara endast med giltig JSON i formatet {"title": "...", "body": "..."}. Använd \\n\\n för styckesbrytningar i brödtexten.'
-    );
-
     return lines.join("\n");
-  }, [angle, language, prefix, tone, topic]);
+  }, [angle, prefix, tone, topic]);
 
   const handleGenerate = async () => {
     if (!topic.trim()) {
@@ -152,19 +94,14 @@ export default function Home() {
     try {
       const response = await fetch("/api/gemini", {
         method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt: promptText }),
       });
 
-      if (!response.ok) {
-        throw new Error(`Server returned ${response.status}`);
-      }
+      if (!response.ok) throw new Error(`Server returned ${response.status}`);
 
       const data = (await response.json()) as { text?: string; error?: string };
-
-      if (!data.text) {
-        throw new Error(data.error || "Modellen gav inget svar.");
-      }
+      if (!data.text) throw new Error(data.error || "Modellen gav inget svar.");
 
       const parsedArticle = extractArticle(data.text);
       setArticle(parsedArticle);
@@ -176,7 +113,9 @@ export default function Home() {
       );
     } catch (err) {
       console.error("Fel vid generering:", err);
-      setError("Kunde inte skapa artikel just nu. Testa att ändra instruktionen och försök igen.");
+      setError(
+        "Kunde inte skapa artikel just nu. Testa att ändra instruktionen och försök igen."
+      );
     } finally {
       setLoading(false);
     }
@@ -187,7 +126,9 @@ export default function Home() {
       <header className="shadow-xl">
         <div className="bg-[#b80000] text-white">
           <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-            <span className="text-3xl font-black italic tracking-tight">AIftonbladet</span>
+            <span className="text-3xl font-black italic tracking-tight">
+              AIftonbladet
+            </span>
             <span className="hidden text-xs font-semibold uppercase tracking-wider sm:block">
               Uppdateras av din egen AI-redaktion
             </span>
@@ -228,22 +169,24 @@ export default function Home() {
                   </h1>
 
                   <div className="flex items-center gap-4 text-xs font-semibold uppercase tracking-[0.3em] text-[#555]">
-                    <span>{timestamp ? `Publicerad ${timestamp}` : "Publicerad just nu"}</span>
+                    <span>
+                      {timestamp
+                        ? `Publicerad ${timestamp}`
+                        : "Publicerad just nu"}
+                    </span>
                     <span>AI-REDAKTIONEN</span>
-                    <span>{prefix.trim() ? `Tagg: ${prefix.trim()}` : "Direkt"}</span>
+                    <span>
+                      {prefix.trim()
+                        ? `Tagg: ${prefix.trim()}`
+                        : "Direkt"}
+                    </span>
                   </div>
 
-                  <div className="space-y-4 text-lg leading-relaxed text-[#1a1a1a]">
-                    {article.body
-                      .split(/\n{2,}/)
-                      .map((paragraph, index) => (
-                        <p
-                          key={index}
-                          className="first-letter:float-left first-letter:mr-2 first-letter:text-4xl first-letter:font-black first-letter:text-[#b80000]"
-                        >
-                          {paragraph}
-                        </p>
-                      ))}
+                
+                  <div className="space-y-3 text-lg leading-relaxed text-[#1a1a1a]">
+                    {article.body.split(/\n{2,}/).map((p, i) => (
+                      <p key={i}>{p}</p>
+                    ))}
                   </div>
                 </div>
               ) : (
@@ -252,11 +195,13 @@ export default function Home() {
                     Din AI-förstasida väntar
                   </h2>
                   <p>
-                    Välj ämne, ton och format i kontrollpanelen för att låta din anslutna AI skriva nattens stora rubrik.
-                    Resultatet visas här i klassisk tabloidstil.
+                    Välj ämne, ton och format i kontrollpanelen för att låta din
+                    anslutna AI skriva nattens stora rubrik.
                   </p>
                   <p>
-                    Behöver du inspiration? Testa till exempel ett skolevenemang, en tekniknyhet eller en lokal händelse och se hur rubriken kastas fram i stor stil.
+                    Testa till exempel ett skolevenemang, en tekniknyhet eller
+                    en lokal händelse och se hur rubriken kastas fram i stor
+                    stil.
                   </p>
                 </div>
               )}
@@ -266,7 +211,9 @@ export default function Home() {
 
         <aside className="space-y-6">
           <div className="rounded-xl border border-black/5 bg-white p-6 shadow-xl">
-            <h2 className="text-xl font-black uppercase text-[#b80000]">AI-nyhetsverkstad</h2>
+            <h2 className="text-xl font-black uppercase text-[#b80000]">
+              AI-nyhetsverkstad
+            </h2>
 
             <div className="mt-6 space-y-5">
               <label className="block text-xs font-semibold uppercase tracking-[0.3em] text-[#555]">
@@ -276,7 +223,7 @@ export default function Home() {
                 type="text"
                 placeholder="Till exempel: AI i klassrummet"
                 value={topic}
-                onChange={(event) => setTopic(event.target.value)}
+                onChange={(e) => setTopic(e.target.value)}
                 className="w-full rounded border border-black/15 bg-[#fef9e7] px-3 py-2 text-sm font-semibold uppercase tracking-wide text-[#111] placeholder:text-[#999] focus:border-[#b80000] focus:outline-none focus:ring-2 focus:ring-[#ffd400]"
               />
 
@@ -287,7 +234,7 @@ export default function Home() {
                 rows={2}
                 placeholder="Vad är twisten eller det mest dramatiska som händer?"
                 value={angle}
-                onChange={(event) => setAngle(event.target.value)}
+                onChange={(e) => setAngle(e.target.value)}
                 className="w-full rounded border border-black/15 bg-white px-3 py-2 text-sm leading-relaxed text-[#111] placeholder:text-[#999] focus:border-[#b80000] focus:outline-none focus:ring-2 focus:ring-[#ffd400]"
               />
 
@@ -298,7 +245,7 @@ export default function Home() {
                 <input
                   type="text"
                   value={prefix}
-                  onChange={(event) => setPrefix(event.target.value.toUpperCase())}
+                  onChange={(e) => setPrefix(e.target.value.toUpperCase())}
                   className="mt-1 w-full rounded border border-black/15 bg-white px-3 py-2 text-sm font-semibold uppercase tracking-[0.4em] text-[#111] focus:border-[#b80000] focus:outline-none focus:ring-2 focus:ring-[#ffd400]"
                 />
               </div>
@@ -309,31 +256,12 @@ export default function Home() {
                 </label>
                 <select
                   value={tone}
-                  onChange={(event) => setTone(event.target.value)}
+                  onChange={(e) => setTone(e.target.value)}
                   className="mt-1 w-full rounded border border-black/15 bg-white px-3 py-2 text-sm font-semibold uppercase tracking-wide text-[#111] focus:border-[#b80000] focus:outline-none focus:ring-2 focus:ring-[#ffd400]"
                 >
                   {tonePresets.map((preset) => (
-                    <option key={preset.label} value={preset.value} className="normal-case">
+                    <option key={preset.label} value={preset.value}>
                       {preset.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-[0.3em] text-[#555]">
-                  Språk
-                </label>
-                <select
-                  value={language}
-                  onChange={(event) =>
-                    setLanguage(event.target.value as LanguageOption["value"])
-                  }
-                  className="mt-1 w-full rounded border border-black/15 bg-white px-3 py-2 text-sm font-semibold uppercase tracking-wide text-[#111] focus:border-[#b80000] focus:outline-none focus:ring-2 focus:ring-[#ffd400]"
-                >
-                  {languageOptions.map((option) => (
-                    <option key={option.value} value={option.value} className="normal-case">
-                      {option.label}
                     </option>
                   ))}
                 </select>
@@ -359,10 +287,6 @@ export default function Home() {
             <h3 className="text-sm font-black uppercase tracking-[0.4em] text-[#b80000]">
               Prompt som skickas till AI
             </h3>
-            <p className="mt-2 text-xs text-[#555]">
-              Kopiera och justera texten om du vill finslipa egna förslag. Den uppdateras automatiskt när du ändrar
-              inställningarna.
-            </p>
             <textarea
               readOnly
               value={promptText}
@@ -374,4 +298,3 @@ export default function Home() {
     </main>
   );
 }
-
