@@ -1,17 +1,17 @@
 ﻿"use client";
 
 import { useMemo, useState } from "react";
-
+//type defs
 type Article = { title: string; body: string };
 type TonePreset = { label: string; value: string };
-
+// Fördefinierade ton-alternativ för artiklar
 const tonePresets: TonePreset[] = [
   { label: "Explosiv breaking", value: "Explosiv kvällstidningsstil med högt tempo och dramatik." },
   { label: "Vardaglig dramatik", value: "Berättande vardagsdramatik med känslor och igenkänning." },
   { label: "Tekno-eufori", value: "Euforisk teknikton med framtidslöften och stora ord." },
   { label: "Skandalavslöjande", value: "Avslöjande ton med antydan om hemligheter och läckta detaljer." },
 ];
-
+// Extraherar rubrik och brödtext ur rå text från AI
 const extractArticle = (raw: string): Article => {
   const fallback: Article = {
     title: "EXTRA: AI skapade ingen rubrik",
@@ -37,7 +37,7 @@ export default function Home() {
   const [timestamp, setTimestamp] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
+//PROMPT FÖR API ANROP
   const promptText = useMemo(() => {
     const cleanedTopic = topic.trim() || "AI och dess påverkan på samhället";
     const uppercasePrefix = (prefix.trim() || "EXTRA").toUpperCase();
@@ -64,7 +64,7 @@ export default function Home() {
 
     setLoading(true);
     setError(null);
-
+// AI API ANROP
     try {
       const response = await fetch("/api/gemini", {
         method: "POST",
@@ -92,7 +92,7 @@ export default function Home() {
       setLoading(false);
     }
   };
-
+//JSX FÖR SIDAN
   return (
     <main className="min-h-screen bg-[#f5f5f5] text-[#111]">
       {/* HEADER */}
