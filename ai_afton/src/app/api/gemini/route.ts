@@ -9,7 +9,7 @@ export async function POST(req: Request) {
     const { prompt } = await req.json();
 
     // Load the model VÄXLA MELLAN PRO OCH FLASH  HÄR
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     // Generate content
     const result = await model.generateContent(prompt);
