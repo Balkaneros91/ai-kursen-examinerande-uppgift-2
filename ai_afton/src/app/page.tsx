@@ -112,7 +112,7 @@ export default function Home() {
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
           <div className="flex items-center gap-3">
             {/* Gul logga utan svart bakgrund */}
-            <span className="text-3xl font-black italic text-[#ff0040] drop-shadow-[1px_1px_0_black]">
+            <span className="text-3xl font-black italic text-[#00eaff] drop-shadow-[1px_1px_0_black]">
               AIFTONBLADET
             </span>
             <span className="text-xs text-[#555]">
