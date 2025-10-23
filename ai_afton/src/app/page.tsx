@@ -6,10 +6,22 @@ type Article = { title: string; body: string };
 type TonePreset = { label: string; value: string };
 // Fördefinierade ton-alternativ för artiklar
 const tonePresets: TonePreset[] = [
-  { label: "Explosiv breaking", value: "Explosiv kvällstidningsstil med högt tempo och dramatik." },
-  { label: "Vardaglig dramatik", value: "Berättande vardagsdramatik med känslor och igenkänning." },
-  { label: "Tekno-eufori", value: "Euforisk teknikton med framtidslöften och stora ord." },
-  { label: "Skandalavslöjande", value: "Avslöjande ton med antydan om hemligheter och läckta detaljer." },
+  {
+    label: "Explosiv breaking",
+    value: "Explosiv kvällstidningsstil med högt tempo och dramatik.",
+  },
+  {
+    label: "Vardaglig dramatik",
+    value: "Berättande vardagsdramatik med känslor och igenkänning.",
+  },
+  {
+    label: "Tekno-eufori",
+    value: "Euforisk teknikton med framtidslöften och stora ord.",
+  },
+  {
+    label: "Skandalavslöjande",
+    value: "Avslöjande ton med antydan om hemligheter och läckta detaljer.",
+  },
 ];
 // Extraherar rubrik och brödtext ur rå text från AI
 const extractArticle = (raw: string): Article => {
@@ -37,7 +49,7 @@ export default function Home() {
   const [timestamp, setTimestamp] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-//PROMPT FÖR API ANROP
+  //PROMPT FÖR API ANROP
   const promptText = useMemo(() => {
     const cleanedTopic = topic.trim() || "AI och dess påverkan på samhället";
     const uppercasePrefix = (prefix.trim() || "EXTRA").toUpperCase();
@@ -64,7 +76,7 @@ export default function Home() {
 
     setLoading(true);
     setError(null);
-// AI API ANROP
+    // AI API ANROP
     try {
       const response = await fetch("/api/gemini", {
         method: "POST",
@@ -92,7 +104,7 @@ export default function Home() {
       setLoading(false);
     }
   };
-//JSX FÖR SIDAN
+  //JSX FÖR SIDAN
   return (
     <main className="min-h-screen bg-[#f5f5f5] text-[#111]">
       {/* HEADER */}
@@ -100,7 +112,7 @@ export default function Home() {
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
           <div className="flex items-center gap-3">
             {/* Gul logga utan svart bakgrund */}
-            <span className="text-3xl font-black italic text-[#ffce00] drop-shadow-[1px_1px_0_black]">
+            <span className="text-3xl font-black italic text-[#ff0040] drop-shadow-[1px_1px_0_black]">
               AIFTONBLADET
             </span>
             <span className="text-xs text-[#555]">
@@ -147,7 +159,8 @@ export default function Home() {
                 {article.title}
               </h1>
               <p className="mt-2 text-sm text-[#555]">
-                {timestamp ? `Publicerad ${timestamp}` : "Publicerad just nu"} • AI-redaktionen
+                {timestamp ? `Publicerad ${timestamp}` : "Publicerad just nu"} •
+                AI-redaktionen
               </p>
 
               <div className="mt-4 space-y-3 text-lg leading-relaxed text-[#1a1a1a]">
@@ -162,7 +175,8 @@ export default function Home() {
                 Din AI-förstasida väntar
               </h2>
               <p>
-                Skapa en nyhet genom att fylla i ämne, ton och vinkel i kontrollpanelen.
+                Skapa en nyhet genom att fylla i ämne, ton och vinkel i
+                kontrollpanelen.
               </p>
             </div>
           )}
@@ -177,26 +191,36 @@ export default function Home() {
             <ul className="space-y-3 text-sm">
               <li>
                 <span className="font-bold text-[#b80000]">14.05 </span>
-                <span className="font-semibold text-[#111]">Tysk borgmästare i knivattack</span>
+                <span className="font-semibold text-[#111]">
+                  Tysk borgmästare i knivattack
+                </span>
               </li>
               <li>
                 <span className="font-bold text-[#b80000]">13.42 </span>
-                <span className="font-semibold text-[#111]">Polisbil har voltat</span>
+                <span className="font-semibold text-[#111]">
+                  Polisbil har voltat
+                </span>
               </li>
               <li>
                 <span className="font-bold text-[#b80000]">13.12 </span>
-                <span className="font-semibold text-[#111]">Skulle omhändertas – timmar innan dådet</span>
+                <span className="font-semibold text-[#111]">
+                  Skulle omhändertas – timmar innan dådet
+                </span>
               </li>
               <li>
                 <span className="font-bold text-[#b80000]">13.00 </span>
-                <span className="font-semibold text-[#111]">Danmark förbjuder sociala medier för barn</span>
+                <span className="font-semibold text-[#111]">
+                  Danmark förbjuder sociala medier för barn
+                </span>
               </li>
             </ul>
           </div>
 
           {/* Input controls */}
           <div className="rounded bg-white p-6 shadow-md">
-            <h3 className="text-lg font-black uppercase text-[#b80000] mb-4">AI-nyhetsverkstad</h3>
+            <h3 className="text-lg font-black uppercase text-[#b80000] mb-4">
+              AI-nyhetsverkstad
+            </h3>
 
             <label className="block text-xs font-semibold uppercase tracking-[0.2em] text-[#555] mb-1">
               Ämne
@@ -226,8 +250,7 @@ export default function Home() {
             <select
               value={tone}
               onChange={(e) => setTone(e.target.value)}
-              className="mb-3 w-full rounded border border-black/15 bg-white px-3 py-2 text-sm font-semibold uppercase tracking-wide text-[#111] focus:border-[#b80000] focus:outline-none focus:ring-2 focus:ring-[#ffd400]"
-            >
+              className="mb-3 w-full rounded border border-black/15 bg-white px-3 py-2 text-sm font-semibold uppercase tracking-wide text-[#111] focus:border-[#b80000] focus:outline-none focus:ring-2 focus:ring-[#ffd400]">
               {tonePresets.map((preset) => (
                 <option key={preset.label} value={preset.value}>
                   {preset.label}
@@ -244,8 +267,7 @@ export default function Home() {
             <button
               onClick={handleGenerate}
               disabled={loading}
-              className="w-full rounded bg-[#b80000] px-5 py-2 text-sm font-black uppercase tracking-[0.3em] text-white transition hover:bg-[#a00000] disabled:bg-[#ccc] disabled:text-[#666]"
-            >
+              className="w-full rounded bg-[#b80000] px-5 py-2 text-sm font-black uppercase tracking-[0.3em] text-white transition hover:bg-[#a00000] disabled:bg-[#ccc] disabled:text-[#666]">
               {loading ? "AI skriver..." : "Generera artikel"}
             </button>
           </div>
@@ -254,4 +276,3 @@ export default function Home() {
     </main>
   );
 }
-
